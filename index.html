@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xetra Client</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #010101;
+            --surface: #08080a;
+            --accent: #57c5c9;
+            --accent-muted: rgba(87, 197, 201, 0.12);
+            --text-main: #f1f5f9;
+            --text-dim: #6b7280;
+            --border: rgba(255, 255, 255, 0.03);
+            --transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            overflow-x: hidden;
+            font-size: 18px;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.4;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 3rem;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3rem 0;
+            animation: fadeIn 1.2s ease;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #fff;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 3px;
+            display: inline-block;
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        .logo span {
+            color: var(--accent);
+            font-weight: 400;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: var(--surface);
+            padding: 5px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            padding: 0.7rem 1.8rem;
+            border-radius: 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.04);
+            color: #fff;
+        }
+
+        .btn-discord-nav {
+            background: #1d1d1f;
+            color: var(--accent);
+            padding: 0.8rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .btn-discord-nav:hover {
+            background: #5865F2;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .wave-text {
+            background: linear-gradient(to right, var(--accent) 20%, #fff 40%, var(--accent) 60%, var(--accent) 80%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shineWave 5s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes shineWave { to { background-position: 200% center; } }
+
+        .content-section {
+            display: none;
+            padding: 6rem 0;
+            animation: slideUp 0.8s ease;
+        }
+
+        .content-section.active { display: block; }
+
+        .hero-layout {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 5rem;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: 5.5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 2rem;
+            letter-spacing: -2px;
+        }
+
+        .hero-text p {
+            font-size: 1.3rem;
+            color: var(--text-dim);
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            max-width: 550px;
+        }
+
+        .gui-img {
+            width: 100%;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+            animation: floatUI 10s ease-in-out infinite;
+        }
+
+        .faq-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            align-self: start;
+            overflow: hidden;
+        }
+
+        .faq-item:hover {
+            border-color: rgba(87, 197, 201, 0.3);
+            background: #0d0d0f;
+        }
+
+        .faq-q { 
+            padding: 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            font-weight: 600; 
+            align-items: center; 
+            font-size: 1.1rem;
+        }
+
+        .faq-a { 
+            padding: 0 2rem; 
+            max-height: 0; 
+            overflow: hidden; 
+            transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1); 
+            color: var(--text-dim); 
+            line-height: 1.7; 
+            font-size: 1rem;
+        }
+
+        .faq-item.active .faq-a { padding-bottom: 2rem; max-height: 400px; }
+        .faq-item.active { border-color: var(--accent-muted); background: #0c0c0e; }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: #fff;
+            color: #000;
+            padding: 1.4rem 3.5rem;
+            border-radius: 18px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover { transform: scale(1.03); box-shadow: 0 10px 30px rgba(255,255,255,0.1); }
+
+        footer { 
+            margin-top: 10rem; 
+            padding-bottom: 5rem; 
+            text-align: center; 
+            color: #333; 
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+
+        footer span { color: #555; font-weight: 600; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes floatUI { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+        @media (max-width: 1024px) {
+            .hero-layout, .faq-container { grid-template-columns: 1fr; }
+            .hero-text h1 { font-size: 3.5rem; }
+            nav { flex-direction: column; gap: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="container">
+        <nav>
+            <div class="logo">Xetra</div>
+            <div class="nav-right">
+                <div class="nav-tabs">
+                    <button class="tab-btn active" onclick="openTab(event, 'home')">Home</button>
+                    <button class="tab-btn" onclick="openTab(event, 'faq')">FAQ</button>
+                    <button class="tab-btn" onclick="openTab(event, 'dl')">Download</button>
+                </div>
+                <a href="https://discord.gg/ShJxfRxf3V" target="_blank" class="btn-discord-nav">
+                    <i data-lucide="message-circle"></i>
+                </a>
+            </div>
+        </nav>
+
+        <section id="home" class="content-section active">
+            <div class="hero-layout">
+                <div class="hero-text">
+                    <h1>Foremost<br> <span class="wave-text">Ghost Utility</span></h1>
+                    <p>The foremost ghost utility for almost every 1.8.9-based Minecraft client. No matter AntiCheat, simply the best.</p>
+                    <div style="display: flex; gap: 15px;">
+                        <a href="#" onclick="openTab(event, 'dl')" class="btn-primary">Get Xetra</a>
+                        <a href="https://discord.gg/ShJxfRxf3V" target="_blank" class="btn-discord-nav" style="padding: 0 1.5rem; border-radius: 18px; font-weight: 600;">
+                            Community
+                        </a>
+                    </div>
+                </div>
+                <div class="gui-wrapper">
+                    <img src="https://raw.githubusercontent.com/xetraclient/xetraclient.github.io/main/menulatest.png" alt="Xetra Interface" class="gui-img">
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="content-section">
+            <div style="text-align: center; margin-bottom: 4rem;">
+                <h2 class="wave-text" style="font-size: 3.5rem; font-weight: 800;">Common Questions</h2>
+                <p style="color: var(--text-dim); margin-top: 10px;">Everything you need to know about Xetra Client.</p>
+            </div>
+            
+            <div class="faq-container">
+                <div class="faq-item" onclick="this.classList.toggle('active')">
+                    <div class="faq-q">Is Xetra compatible with Windows 11? <i data-lucide="plus" size="18"></i></div>
+                    <div class="faq-a">Yes, Xetra is fully optimized for Windows 10 and 11, including the latest cumulative updates.</div>
+                </div>
+
+                <div class="faq-item" onclick="this.classList.toggle('active')">
+                    <div class="faq-q">Will it work on competitive servers? <i data-lucide="plus" size="18"></i></div>
+                    <div class="faq-a">Xetra is specifically engineered for ghost usage. Our modules bypass Watchdog and similar advanced anti-cheats with correct settings.</div>
+                </div>
+
+                <div class="faq-item" onclick="this.classList.toggle('active')">
+                    <div class="faq-q">Is there a self-destruct feature? <i data-lucide="plus" size="18"></i></div>
+                    <div class="faq-a">Yes. Xetra includes a military-grade self-destruct that clears strings from memory and unhooks all processes instantly.</div>
+                </div>
+
+                <div class="faq-item" onclick="this.classList.toggle('active')">
+                    <div class="faq-q">Is it detectable on screen share? <i data-lucide="plus" size="18"></i></div>
+                    <div class="faq-a">With the "External Visuals" and "Hide from Capture" features enabled, Xetra remains invisible to most recording and screen-sharing software.</div>
+                </div>
+
+                <div class="faq-item" onclick="this.classList.toggle('active')">
+                    <div class="faq-q">How often are bypasses updated? <i data-lucide="plus" size="18"></i></div>
+                    <div class="faq-a">Our development team monitors anti-cheat updates daily. Bypasses are typically updated within 24-48 hours of a major patch.</div>
+                </div>
+
+                <div class="faq-item" onclick="this.classList.toggle('active')">
+                    <div class="faq-q">Can I share my configurations? <i data-lucide="plus" size="18"></i></div>
+                    <div class="faq-a">Absolutely. Our Discord community has a dedicated channel where elite players share their best configurations.</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="dl" class="content-section">
+            <div style="text-align: center; background: var(--surface); padding: 8rem 2rem; border-radius: 40px; border: 1px solid var(--border);">
+                <h2 style="font-size: 3.5rem; margin-bottom: 1.5rem;">Xetra Client<p>The Foremost Ghost Utility</p></h2>
+                <p style="color: var(--text-dim); margin-bottom: 4rem; font-size: 1.2rem;">Ready to dominate?</p>
+                <a href="https://github.com/xetraclient/xetraclient.github.io/raw/main/xetra.dll" class="btn-primary" style="background: var(--accent);">
+                    <i data-lucide="download"></i> Download Xetra
+                </a>
+            </div>
+        </section>
+
+        <footer>
+            <p>Xetra Client - Beyond the Perfection. © 2023 - 2026</p>
+        </footer>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function initCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = [];
+            for(let i=0; i<22; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 10 + 5,
+                    vx: (Math.random() - 0.5) * 0.25,
+                    vy: (Math.random() - 0.5) * 0.25,
+                    opacity: Math.random() * 0.3 + 0.05
+                });
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.x += p.vx; p.y += p.vy;
+                if(p.x < -30) p.x = canvas.width + 30;
+                if(p.x > canvas.width + 30) p.x = -30;
+                if(p.y < -30) p.y = canvas.height + 30;
+                if(p.y > canvas.height + 30) p.y = -30;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(87, 197, 201, ${p.opacity})`;
+                ctx.fill();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+        animate();
+
+        function openTab(evt, tabName) {
+            document.querySelectorAll(".content-section").forEach(s => {
+                s.style.display = "none";
+                s.classList.remove("active");
+            });
+            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+            const target = document.getElementById(tabName);
+            target.style.display = "block";
+            setTimeout(() => target.classList.add("active"), 50);
+            evt.currentTarget.classList.add("active");
+        }
+    </script>
+</body>
+</html>
