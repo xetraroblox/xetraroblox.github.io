@@ -1,4 +1,5 @@
 # Keys for Free usage will be here
+# Keys will be freezed if any update (Roblox or Xetra) occurs
 abc123
 xetra
 xetrafree
