@@ -1,0 +1,2952 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Xetra</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            width: 100%;
+            background: #060f1c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            animation: fadeIn 0.5s ease both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(28px) scale(0.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes logoPulse {
+
+            0%,
+            100% {
+                text-shadow: 0 0 24px rgba(106, 180, 232, 0.18);
+            }
+
+            50% {
+                text-shadow: 0 0 48px rgba(106, 180, 232, 0.42), 0 0 80px rgba(106, 180, 232, 0.15);
+            }
+        }
+
+        @keyframes glowPulse {
+
+            0%,
+            100% {
+                opacity: 0.7;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes dotPop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.35);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes changelogSlide {
+            from {
+                opacity: 0;
+                transform: translateX(22px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% center;
+            }
+
+            100% {
+                background-position: 200% center;
+            }
+        }
+
+        @keyframes tabPageIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes navSlideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        #navbar {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            background: rgba(9, 17, 28, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 999px;
+            padding: 5px 6px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 4px 28px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            animation: none;
+        }
+
+        .nav-tab {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #4e6a88;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 7px 22px;
+            border-radius: 999px;
+            transition: color 0.2s ease, background 0.2s ease;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            color: #9ab8d4;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-tab.active {
+            color: #e2eaf4;
+            background: rgba(51, 87, 176, 0.28);
+            font-weight: 600;
+        }
+
+        #page-content {
+            width: 780px;
+            max-width: 96vw;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab-panel {
+            display: none;
+            animation: tabPageIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .placeholder-panel {
+            background: #0c1621;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 16px 60px rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 40px;
+            gap: 12px;
+        }
+
+        .placeholder-panel .ph-icon {
+            font-size: 36px;
+            opacity: 0.18;
+        }
+
+        .placeholder-panel .ph-title {
+            color: #d1d9e6;
+            font-family: 'Inter', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            opacity: 0.5;
+        }
+
+        .placeholder-panel .ph-sub {
+            color: #4e6a88;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            opacity: 0.6;
+        }
+
+        .dashboard-panel {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(180deg, #0d1724 0%, #09121e 100%);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 16px 60px rgba(0, 0, 0, 0.7);
+            padding: 34px 30px 26px;
+        }
+
+        .dashboard-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 24px;
+            right: 24px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(106, 180, 232, 0.58), transparent);
+        }
+
+        .dashboard-panel::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 18% 18%, rgba(106, 180, 232, 0.12) 0%, transparent 28%),
+                radial-gradient(circle at 82% 78%, rgba(44, 97, 173, 0.16) 0%, transparent 34%),
+                linear-gradient(125deg, rgba(255, 255, 255, 0.025) 0%, transparent 42%),
+                linear-gradient(180deg, rgba(7, 17, 31, 0) 0%, rgba(4, 10, 20, 0.34) 100%);
+            pointer-events: none;
+        }
+
+        .dashboard-panel > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .dashboard-kicker {
+            width: fit-content;
+            margin: 0 auto 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            border: 1px solid rgba(106, 180, 232, 0.18);
+            border-radius: 999px;
+            background: rgba(6, 15, 28, 0.58);
+            color: #9bb8d3;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            text-transform: none;
+            padding: 8px 13px;
+        }
+
+        .dashboard-kicker-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            background: #6ab4e8;
+            box-shadow: 0 0 12px rgba(106, 180, 232, 0.75);
+        }
+
+        .dashboard-hero {
+            text-align: center;
+            padding: 18px 0 24px;
+        }
+
+        .dashboard-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.05;
+            color: #f1f6ff;
+            margin-bottom: 12px;
+        }
+
+        .dashboard-title span {
+            display: block;
+            color: #6ab4e8;
+            text-shadow: 0 0 28px rgba(106, 180, 232, 0.18);
+        }
+
+        .dashboard-sub {
+            max-width: 590px;
+            margin: 0 auto;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #8ea4bb;
+        }
+
+        .dashboard-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-btn {
+            appearance: none;
+            -webkit-appearance: none;
+            min-height: 42px;
+            border: 1px solid rgba(106, 180, 232, 0.42);
+            border-radius: 10px;
+            padding: 0 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            color: #e8edf5;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+        }
+
+        .dashboard-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .dashboard-btn-primary {
+            background: linear-gradient(180deg, rgba(51, 87, 176, 0.62) 0%, rgba(29, 56, 120, 0.48) 100%);
+            box-shadow: 0 8px 24px rgba(25, 55, 140, 0.26);
+        }
+
+        .dashboard-btn-secondary {
+            background: rgba(8, 17, 30, 0.86);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .dashboard-btn:hover {
+            transform: translateY(-1px);
+            border-color: rgba(106, 180, 232, 0.74);
+        }
+
+        .dashboard-divider {
+            height: 1px;
+            margin: 16px auto 0;
+            width: 76%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.09), transparent);
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .dashboard-stat {
+            position: relative;
+            overflow: hidden;
+            --stat-accent: #6ab4e8;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+            min-height: 138px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            background: linear-gradient(180deg, rgba(11, 23, 39, 0.9) 0%, rgba(8, 17, 30, 0.76) 100%);
+            padding: 16px 15px 15px;
+            text-align: left;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 12px 26px rgba(0, 0, 0, 0.18);
+            transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .dashboard-stat::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 15px;
+            right: 15px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--stat-accent) 88%, white 12%), transparent);
+            opacity: 0.7;
+        }
+
+        .dashboard-stat::after {
+            content: '';
+            position: absolute;
+            inset: auto -24px -44px auto;
+            width: 110px;
+            height: 110px;
+            border-radius: 999px;
+            background: radial-gradient(circle, color-mix(in srgb, var(--stat-accent) 22%, transparent) 0%, transparent 68%);
+            pointer-events: none;
+        }
+
+        .dashboard-stat:hover {
+            transform: translateY(-2px);
+            border-color: rgba(106, 180, 232, 0.18);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 16px 32px rgba(0, 0, 0, 0.24);
+        }
+
+        .dashboard-stat.fast {
+            --stat-accent: #7ed6ff;
+        }
+
+        .dashboard-stat.free {
+            --stat-accent: #8bcf8d;
+        }
+
+        .dashboard-stat.discord {
+            --stat-accent: #8f9cff;
+        }
+
+        .dashboard-stat-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: color-mix(in srgb, var(--stat-accent) 12%, rgba(255, 255, 255, 0.02));
+            border: 1px solid color-mix(in srgb, var(--stat-accent) 24%, rgba(255, 255, 255, 0.06));
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .dashboard-stat-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .dashboard-stat svg {
+            width: 17px;
+            height: 17px;
+            color: var(--stat-accent);
+        }
+
+        .dashboard-stat-value {
+            font-family: 'Inter', sans-serif;
+            font-size: 19px;
+            font-weight: 700;
+            color: #f1f6ff;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .dashboard-stat-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.15px;
+            text-transform: none;
+            color: #8ea4bb;
+        }
+
+        .dashboard-stat-note {
+            margin-top: auto;
+            font-family: 'Inter', sans-serif;
+            font-size: 11.5px;
+            line-height: 1.45;
+            color: #6f89a6;
+        }
+
+        .pricing-panel {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(180deg, #0d1724 0%, #09121e 100%);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 16px 60px rgba(0, 0, 0, 0.7);
+            padding: 28px 26px;
+        }
+
+        .pricing-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 24px;
+            right: 24px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(106, 180, 232, 0.58), transparent);
+        }
+
+        .pricing-panel::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(106, 180, 232, 0.06) 0%, transparent 34%);
+            pointer-events: none;
+        }
+
+        .pricing-panel > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .pricing-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .pricing-title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-family: 'Inter', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #e8edf5;
+        }
+
+        .pricing-title svg {
+            width: 19px;
+            height: 19px;
+            color: #6ab4e8;
+        }
+
+        .pricing-badge {
+            border: 1px solid rgba(106, 180, 232, 0.22);
+            border-radius: 999px;
+            background: rgba(106, 180, 232, 0.08);
+            color: #9bb8d3;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            padding: 6px 10px;
+            white-space: nowrap;
+        }
+
+        .pricing-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .pricing-group + .pricing-group {
+            margin-top: 14px;
+        }
+
+        .pricing-group-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: #6f89a6;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pricing-group-title::after {
+            content: '';
+            height: 1px;
+            flex: 1;
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .pricing-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .pricing-item {
+            position: relative;
+            overflow: hidden;
+            padding: 13px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #08111e;
+            transition: border-color 0.22s ease, background 0.22s ease, transform 0.18s ease;
+        }
+
+        .pricing-item::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            bottom: 12px;
+            left: 0;
+            width: 2px;
+            border-radius: 999px;
+            background: rgba(106, 180, 232, 0.45);
+        }
+
+        .pricing-item:hover {
+            background: #0a1422;
+            border-color: rgba(106, 180, 232, 0.22);
+            transform: translateY(-1px);
+        }
+
+        .pricing-item.featured {
+            border-color: rgba(106, 180, 232, 0.24);
+            background: linear-gradient(180deg, rgba(13, 29, 48, 0.96) 0%, rgba(8, 17, 30, 0.98) 100%);
+        }
+
+        .pricing-item.free {
+            background: rgba(8, 17, 30, 0.72);
+        }
+
+        .pricing-item.free::before {
+            background: rgba(111, 137, 166, 0.45);
+        }
+
+        .pricing-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            width: 100%;
+        }
+
+        .pricing-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .pricing-mark {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 34px;
+            color: #6ab4e8;
+            background: rgba(106, 180, 232, 0.08);
+            border: 1px solid rgba(106, 180, 232, 0.16);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .pricing-mark svg {
+            width: 17px;
+            height: 17px;
+        }
+
+        .pricing-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .pricing-duration {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #c8d6e8;
+        }
+
+        .pricing-note {
+            font-family: 'Inter', sans-serif;
+            font-size: 12.5px;
+            color: #6f89a6;
+            line-height: 1.35;
+        }
+
+        .pricing-price-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+        }
+
+        .pricing-price {
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: #6ab4e8;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        .pricing-tag {
+            border-radius: 999px;
+            background: rgba(106, 180, 232, 0.12);
+            color: #9dccf0;
+            font-family: 'Inter', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 7px;
+            white-space: nowrap;
+        }
+
+        .support-panel {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(180deg, #0d1724 0%, #09121e 100%);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 16px 60px rgba(0, 0, 0, 0.7);
+            padding: 28px 26px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .support-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 24px;
+            right: 24px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(106, 180, 232, 0.58), transparent);
+        }
+
+        .support-panel::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(106, 180, 232, 0.06) 0%, transparent 34%);
+            pointer-events: none;
+        }
+
+        .support-panel > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .support-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .support-title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-family: 'Inter', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #e8edf5;
+        }
+
+        .support-title svg {
+            width: 19px;
+            height: 19px;
+            color: #6ab4e8;
+        }
+
+        .support-badge {
+            border: 1px solid rgba(106, 180, 232, 0.22);
+            border-radius: 999px;
+            background: rgba(106, 180, 232, 0.08);
+            color: #9bb8d3;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            padding: 6px 10px;
+            white-space: nowrap;
+        }
+
+        .support-card {
+            position: relative;
+            overflow: hidden;
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: linear-gradient(180deg, rgba(13, 29, 48, 0.96) 0%, rgba(8, 17, 30, 0.98) 100%);
+            transition: border-color 0.22s ease, background 0.22s ease, transform 0.18s ease;
+        }
+
+        .support-card::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            bottom: 12px;
+            left: 0;
+            width: 2px;
+            border-radius: 999px;
+            background: rgba(106, 180, 232, 0.45);
+        }
+
+        .support-card:hover {
+            border-color: rgba(106, 180, 232, 0.22);
+            transform: translateY(-1px);
+        }
+
+        .support-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .support-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .support-mark {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 40px;
+            color: #6ab4e8;
+            background: rgba(106, 180, 232, 0.08);
+            border: 1px solid rgba(106, 180, 232, 0.16);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .support-mark svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .support-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 0;
+        }
+
+        .support-card-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #c8d6e8;
+        }
+
+        .support-sub {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            color: #6f89a6;
+            line-height: 1.35;
+        }
+
+        .support-link {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            color: #9dccf0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .support-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 38px;
+            padding: 0 16px;
+            border-radius: 9px;
+            border: 1px solid rgba(88, 101, 242, 0.55);
+            background: linear-gradient(180deg, rgba(88, 101, 242, 0.34) 0%, rgba(70, 82, 220, 0.28) 100%);
+            color: #e8edf5;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .support-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .support-btn:hover {
+            background: linear-gradient(180deg, rgba(102, 114, 247, 0.42) 0%, rgba(76, 88, 228, 0.36) 100%);
+            border-color: rgba(120, 130, 255, 0.8);
+            transform: translateY(-1px);
+        }
+
+        .download-panel {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(180deg, #0d1724 0%, #09121e 100%);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 16px 60px rgba(0, 0, 0, 0.7);
+            padding: 28px 26px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .download-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 24px;
+            right: 24px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(106, 180, 232, 0.58), transparent);
+        }
+
+        .download-panel::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(106, 180, 232, 0.06) 0%, transparent 34%);
+            pointer-events: none;
+        }
+
+        .download-panel > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .download-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .download-title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-family: 'Inter', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #e8edf5;
+        }
+
+        .download-title svg {
+            width: 19px;
+            height: 19px;
+            color: #6ab4e8;
+        }
+
+        .download-badge {
+            border: 1px solid rgba(106, 180, 232, 0.22);
+            border-radius: 999px;
+            background: rgba(106, 180, 232, 0.08);
+            color: #9bb8d3;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            padding: 6px 10px;
+            white-space: nowrap;
+        }
+
+        .download-card {
+            position: relative;
+            overflow: hidden;
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: linear-gradient(180deg, rgba(13, 29, 48, 0.96) 0%, rgba(8, 17, 30, 0.98) 100%);
+            transition: border-color 0.22s ease, transform 0.18s ease;
+        }
+
+        .download-card::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            bottom: 12px;
+            left: 0;
+            width: 2px;
+            border-radius: 999px;
+            background: rgba(106, 180, 232, 0.45);
+        }
+
+        .download-card:hover {
+            border-color: rgba(106, 180, 232, 0.22);
+            transform: translateY(-1px);
+        }
+
+        .download-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .download-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .download-mark {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 40px;
+            color: #6ab4e8;
+            background: rgba(106, 180, 232, 0.08);
+            border: 1px solid rgba(106, 180, 232, 0.16);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .download-mark svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .download-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 0;
+        }
+
+        .download-card-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #c8d6e8;
+        }
+
+        .download-sub,
+        .download-footnote {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            color: #6f89a6;
+            line-height: 1.35;
+        }
+
+        .download-file {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            color: #9dccf0;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 38px;
+            padding: 0 16px;
+            border-radius: 9px;
+            border: 1px solid rgba(106, 180, 232, 0.42);
+            background: linear-gradient(180deg, rgba(51, 87, 176, 0.42) 0%, rgba(29, 56, 120, 0.34) 100%);
+            color: #e8edf5;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .download-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .download-btn:hover {
+            background: linear-gradient(180deg, rgba(74, 111, 196, 0.5) 0%, rgba(42, 74, 144, 0.42) 100%);
+            border-color: rgba(106, 180, 232, 0.74);
+            transform: translateY(-1px);
+        }
+
+        .download-footnote {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            background: rgba(8, 17, 30, 0.72);
+            padding: 12px 14px;
+        }
+
+        .download-footnote a {
+            color: #9dccf0;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .download-footnote a:hover {
+            color: #c7e6ff;
+        }
+
+
+        #mouse-glow {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 80% 10%, rgba(13, 55, 110, 0.55) 0%, rgba(6, 20, 45, 0.3) 45%, transparent 70%);
+            pointer-events: none;
+            transition: background 0.12s ease;
+            animation: glowPulse 6s ease-in-out infinite;
+        }
+
+        #bottom-glow {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40%;
+            height: 40%;
+            background: radial-gradient(ellipse at 20% 90%, rgba(10, 40, 90, 0.3) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        #loading-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #060f1c;
+            z-index: 5;
+            transition: opacity 0.35s ease;
+        }
+
+        #loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-inner {
+            width: 320px;
+            max-width: 85vw;
+        }
+
+        .loading-labels {
+            display: flex;
+            justify-content: space-between;
+            color: #9eb7d3;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            overflow: hidden;
+        }
+
+        #progress-fill {
+            width: 0%;
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #3357b0 0%, #6fa7df 100%);
+            transition: width 0.16s linear;
+            box-shadow: 0 0 12px rgba(80, 130, 220, 0.55);
+        }
+
+        #main-card {
+            width: 100%;
+            background: #0c1621;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 16px 60px rgba(0, 0, 0, 0.7);
+            position: relative;
+            z-index: 1;
+            opacity: 0.55;
+            transform: scale(0.992);
+            transition: box-shadow 0.3s ease, opacity 0.35s ease, transform 0.35s ease;
+        }
+
+        #main-card.loaded {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .title-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: #09111c;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .title-name {
+            color: #d1d9e6;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #5a6a80;
+            font-size: 16px;
+            line-height: 1;
+            padding: 2px 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .close-btn:hover {
+            color: #c0cfe0;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+        }
+
+        .left-panel {
+            flex: 0 0 47%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 36px 52px;
+            border-right: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .logo-wrap {
+            margin-bottom: 28px;
+        }
+
+        .logo-text {
+            font-family: 'Dancing Script', cursive;
+            font-size: 68px;
+            font-weight: 700;
+            color: #6ab4e8;
+            line-height: 1;
+            letter-spacing: 1px;
+            display: block;
+            animation: logoPulse 4s ease-in-out infinite;
+        }
+
+        .key-input {
+            width: 100%;
+            max-width: 300px;
+            background: #080f18;
+            border: 1.5px solid rgba(255, 255, 255, 0.07);
+            border-radius: 999px;
+            padding: 10px 18px;
+            color: #9baabf;
+            font-size: 13.5px;
+            font-family: 'Inter', sans-serif;
+            text-align: center;
+            outline: none;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
+            margin-bottom: 12px;
+            transition: border 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .key-input:focus {
+            border-color: rgba(51, 87, 176, 0.7);
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 0 3px rgba(51, 87, 176, 0.18);
+        }
+
+        .login-btn {
+            width: 100%;
+            max-width: 300px;
+            background: linear-gradient(180deg, #3357b0 0%, #1d3878 100%);
+            border: none;
+            border-radius: 999px;
+            padding: 11px 18px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.4px;
+            cursor: pointer;
+            box-shadow: 0 2px 0 rgba(255, 255, 255, 0.08) inset, 0 4px 20px rgba(25, 55, 140, 0.45);
+            margin-bottom: 16px;
+            transition: background 0.22s ease, box-shadow 0.22s ease, transform 0.15s ease;
+            background-size: 200% auto;
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(180deg, #4a6fc4 0%, #2a4a90 100%);
+            box-shadow: 0 2px 0 rgba(255, 255, 255, 0.1) inset, 0 6px 28px rgba(25, 55, 140, 0.65);
+            transform: scale(1.01);
+        }
+
+        .login-btn:active {
+            background: linear-gradient(180deg, #2448a0 0%, #172e68 100%);
+            transform: scale(0.975);
+        }
+
+        .hint-text {
+            color: #3e6fa0;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 400;
+            text-align: center;
+        }
+
+        .right-panel {
+            flex: 1;
+            padding: 40px 28px 40px 32px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .changelog-title {
+            color: #e8edf5;
+            font-family: 'Inter', sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+            margin: 0 0 14px 0;
+            letter-spacing: 0.1px;
+        }
+
+        .changelog-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .changelog-card {
+            background: #0b1520;
+            border: 1px solid rgba(255, 255, 255, 0.055);
+            border-radius: 10px;
+            padding: 14px 18px 12px 18px;
+            transition: background 0.25s ease, border 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+            cursor: default;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            flex: 1;
+        }
+
+        .changelog-card:hover {
+            background: #0f1c2e;
+            border-color: rgba(51, 87, 176, 0.35);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .changelog-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .version-tag {
+            color: #dde4ee;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .version-date {
+            color: #3e5570;
+            font-family: 'Inter', sans-serif;
+            font-size: 11.5px;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        .change-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .change-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #e8edf5;
+            font-family: 'Inter', sans-serif;
+            font-size: 12.5px;
+            font-weight: 400;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #3a6ea8;
+            flex-shrink: 0;
+            display: inline-block;
+            transition: background 0.25s ease, transform 0.25s ease;
+        }
+
+        .changelog-card:hover .dot {
+            background: #5a8fd4;
+            transform: scale(1.3);
+        }
+
+        .mod-card {
+            width: 100%;
+            height: 560px;
+            background: #0c1621;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 16px 60px rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mod-body {
+            flex: 1;
+            min-height: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mod-panel {
+            display: none;
+            flex-direction: row;
+            align-items: stretch;
+            height: 100%;
+            animation: tabPageIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        .mod-panel.active {
+            display: flex;
+        }
+
+        .mod-panel-full {
+            padding: 20px 24px;
+            overflow-y: auto;
+            width: 100%;
+            flex-direction: column;
+        }
+
+        #mod-configs {
+            overflow: hidden;
+        }
+
+        #mod-configs .mod-section-full {
+            flex: 1;
+            min-height: 0;
+        }
+
+        #mod-configs .mod-textarea {
+            flex: 1;
+            height: auto;
+            min-height: 0;
+        }
+
+        .mod-config-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+
+        .mod-config-btns .mod-btn {
+            flex: 1;
+            padding: 10px 12px;
+            font-size: 13.5px;
+            font-weight: 700;
+            border-radius: 9px;
+        }
+
+        .mod-left {
+            flex: 0 0 44%;
+            padding: 20px 24px;
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+        }
+
+        .mod-right {
+            flex: 1;
+            padding: 20px 24px;
+            overflow-y: auto;
+        }
+
+        .mod-section {
+            background: #08111e;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .mod-section-full {
+            background: #08111e;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .mod-section-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 10.5px;
+            font-weight: 700;
+            color: #3a6ea8;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .mod-checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            color: #c8d6e8;
+            user-select: none;
+        }
+
+        .mod-cb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            min-width: 18px;
+            border-radius: 5px;
+            border: 1.5px solid rgba(255, 255, 255, 0.18);
+            background: rgba(6, 15, 28, 0.9);
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mod-cb:hover {
+            border-color: rgba(74, 122, 212, 0.6);
+        }
+
+        .mod-cb:checked {
+            background: #2f57b0;
+            border-color: #5588e0;
+            box-shadow: 0 0 0 2px rgba(51, 87, 176, 0.25);
+        }
+
+        .mod-cb:checked::before {
+            content: '';
+            display: block;
+            width: 5px;
+            height: 9px;
+            border: 2.5px solid #fff;
+            border-top: none;
+            border-left: none;
+            transform: rotate(45deg) translateY(-1px);
+            position: absolute;
+        }
+
+        .mod-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mod-row-gap {
+            margin-top: 4px;
+        }
+
+        .mod-row-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            color: #c8d6e8;
+        }
+
+        .mod-select-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            isolation: isolate;
+            min-width: 140px;
+            z-index: 1;
+        }
+
+        .mod-select-wrap.is-open {
+            z-index: 60;
+        }
+
+        .mod-select {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            pointer-events: none;
+            width: 0;
+            height: 0;
+        }
+
+        .mod-select-wide {
+            min-width: 220px;
+        }
+
+        .mod-select-arrow {
+            display: none;
+        }
+
+        .mod-custom-select {
+            position: relative;
+            min-width: 140px;
+            width: 100%;
+        }
+
+        .mod-custom-select.is-wide {
+            min-width: 220px;
+        }
+
+        .mod-custom-trigger {
+            width: 100%;
+            border: 1px solid rgba(76, 123, 213, 0.42);
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(8, 20, 36, 0.97) 0%, rgba(3, 12, 24, 0.99) 100%);
+            color: #dce9fb;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.2;
+            padding: 10px 42px 10px 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-start;
+            cursor: pointer;
+            transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.15s ease;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 22px rgba(2, 8, 16, 0.45);
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .mod-custom-trigger:hover {
+            border-color: rgba(109, 162, 255, 0.7);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09), 0 12px 24px rgba(3, 12, 24, 0.55);
+        }
+
+        .mod-custom-select.is-open .mod-custom-trigger {
+            border-color: rgba(90, 148, 248, 0.95);
+            box-shadow: 0 0 0 3px rgba(51, 106, 204, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .mod-custom-value {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mod-custom-chevron {
+            position: absolute;
+            right: 11px;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            border-radius: 7px;
+            background: rgba(49, 102, 194, 0.17);
+            border: 1px solid rgba(88, 138, 224, 0.35);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ec5ff;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            pointer-events: none;
+            transform: translateY(-50%);
+            transition: background 0.2s ease;
+        }
+
+        .mod-custom-chevron::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 7px;
+            height: 7px;
+            border-right: 1.6px solid currentColor;
+            border-bottom: 1.6px solid currentColor;
+            transform: translate(-50%, -62%) rotate(45deg);
+            transition: transform 0.2s ease;
+        }
+
+        .mod-custom-select.is-open .mod-custom-chevron {
+            background: rgba(63, 125, 224, 0.24);
+        }
+
+        .mod-custom-select.is-open .mod-custom-chevron::before {
+            transform: translate(-50%, -40%) rotate(225deg);
+        }
+
+        .mod-custom-menu {
+            position: absolute;
+            top: calc(100% + 7px);
+            left: 0;
+            right: 0;
+            padding: 6px;
+            border-radius: 12px;
+            border: 1px solid rgba(75, 126, 220, 0.5);
+            background: linear-gradient(180deg, rgba(2, 16, 33, 0.99) 0%, rgba(1, 11, 24, 0.99) 100%);
+            box-shadow: 0 18px 34px rgba(1, 9, 20, 0.72);
+            display: grid;
+            gap: 4px;
+            z-index: 30;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-4px) scale(0.985);
+            transform-origin: top center;
+            transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s ease;
+        }
+
+        .mod-custom-select.is-open .mod-custom-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .mod-custom-option {
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: #cfe0f6;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: left;
+            padding: 8px 10px;
+            cursor: pointer;
+            transition: background 0.16s ease, color 0.16s ease;
+        }
+
+        .mod-custom-option:hover {
+            background: rgba(47, 106, 194, 0.24);
+            color: #f1f7ff;
+        }
+
+        .mod-custom-option.is-selected {
+            background: linear-gradient(180deg, rgba(48, 110, 204, 0.95) 0%, rgba(37, 95, 186, 0.95) 100%);
+            color: #ffffff;
+        }
+
+        .mod-slider-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+
+        .mod-slider-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            color: #c8d6e8;
+        }
+
+        .mod-slider-val {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            color: #e8edf5;
+            font-weight: 700;
+        }
+
+        .mod-slider {
+            width: 100%;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            height: 4px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            padding: 0;
+            outline: none;
+            cursor: pointer;
+            margin: 6px 0 2px;
+        }
+
+        .mod-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            margin-top: -5.5px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: none;
+            box-shadow: 0 0 0 2px rgba(51, 87, 176, 0.6), 0 2px 6px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            transition: box-shadow 0.2s, transform 0.15s;
+        }
+
+        .mod-slider::-webkit-slider-thumb:hover {
+            box-shadow: 0 0 0 3px rgba(51, 87, 176, 0.8), 0 2px 8px rgba(0, 0, 0, 0.5);
+            transform: scale(1.1);
+        }
+
+        .mod-slider::-webkit-slider-runnable-track {
+            border-radius: 999px;
+            height: 4px;
+        }
+
+        .mod-slider::-moz-range-track {
+            height: 4px;
+            border: none;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .mod-slider::-moz-range-progress {
+            height: 4px;
+            border-radius: 999px;
+            background: #3357b0;
+        }
+
+        .mod-slider::-moz-range-thumb {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            border: none;
+            background: #ffffff;
+            box-shadow: 0 0 0 2px rgba(51, 87, 176, 0.6), 0 2px 6px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            transition: box-shadow 0.2s, transform 0.15s;
+        }
+
+        .mod-slider:focus-visible::-moz-range-thumb {
+            box-shadow: 0 0 0 3px rgba(51, 87, 176, 0.8), 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .mod-btn-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .mod-btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            appearance: none;
+            -webkit-appearance: none;
+            padding: 8px 12px;
+            min-height: 34px;
+            background: #1a2e4a;
+            border: 1px solid rgba(51, 87, 176, 0.3);
+            border-radius: 7px;
+            color: #c8d6e8;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .mod-btn:hover {
+            background: #223a5e;
+            border-color: rgba(51, 87, 176, 0.6);
+        }
+
+        .mod-btn-ghost {
+            background: #0c1824;
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .mod-btn-ghost:hover {
+            background: #111e2e;
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .mod-btn-full {
+            flex: 1;
+        }
+
+        .mod-textarea {
+            width: 100%;
+            height: 220px;
+            background: #060f1c;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 8px;
+            color: #9baabf;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            padding: 12px;
+            outline: none;
+            resize: none;
+            transition: border-color 0.2s;
+        }
+
+        .mod-textarea:focus {
+            border-color: rgba(51, 87, 176, 0.5);
+        }
+
+        .mod-config-btns {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .mod-mt {
+            margin-top: 4px;
+        }
+
+        .mod-mb-sm {
+            margin-bottom: 2px;
+        }
+
+        .mod-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            padding: 8px 14px;
+            background: #09111c;
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .mod-nav-btn {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            padding: 9px 12px;
+            border-radius: 10px;
+            background: none;
+            border: 1px solid transparent;
+            cursor: pointer;
+            color: #3e5570;
+            transition: color 0.25s ease, background 0.25s ease, border-color 0.25s ease, gap 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            white-space: nowrap;
+            line-height: 1;
+            will-change: gap;
+        }
+
+        .mod-nav-btn svg {
+            width: 17px;
+            height: 17px;
+            flex-shrink: 0;
+            display: block;
+        }
+
+        .mod-nav-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            line-height: 1.25;
+            font-weight: 500;
+            letter-spacing: 0.1px;
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 0;
+            opacity: 0;
+            transition: max-width 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.3s ease;
+            will-change: max-width, opacity;
+        }
+
+        .mod-nav-btn:hover .mod-nav-label {
+            max-width: 90px;
+            opacity: 1;
+        }
+
+        .mod-nav-btn:hover {
+            gap: 7px;
+        }
+
+        .mod-nav-btn:hover {
+            color: #8aaac8;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .mod-nav-btn.active {
+            color: #6ab4e8;
+            background: rgba(51, 87, 176, 0.22);
+            border-color: rgba(51, 87, 176, 0.35);
+        }
+
+        .mod-status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mod-status-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            color: #c8d6e8;
+        }
+
+        .mod-status-val {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            color: #e8edf5;
+            font-weight: 600;
+        }
+
+        .mod-info-timer-wrap {
+            margin-top: 2px;
+            background: linear-gradient(180deg, rgba(11, 22, 37, 0.9) 0%, rgba(7, 15, 26, 0.92) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 14px 16px 10px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 24px rgba(0, 0, 0, 0.28);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .mod-info-timer {
+            font-family: 'Inter', sans-serif;
+            font-size: 30px;
+            font-weight: 700;
+            color: #f1f6ff;
+            letter-spacing: 1.5px;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 0 18px rgba(106, 180, 232, 0.18);
+        }
+
+        .mod-info-timer-note {
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6f89a6;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .mod-key-text {
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            color: #c8d6e8;
+        }
+    </style>
+<base target="_blank">
+</head>
+
+<body>
+
+    <div id="mouse-glow"></div>
+    <div id="bottom-glow"></div>
+
+    <div id="loading-overlay">
+        <div class="loading-inner">
+            <div class="loading-labels">
+                <span>Loading interface</span>
+                <span id="progress-pct">0%</span>
+            </div>
+            <div class="progress-track">
+                <div id="progress-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <nav id="navbar">
+        <button class="nav-tab active" onclick="setTab(this)">Dashboard</button>
+        <button class="nav-tab" onclick="setTab(this)">UI</button>
+        <button class="nav-tab" onclick="setTab(this)">Modules</button>
+        <button class="nav-tab" onclick="setTab(this)">Pricing</button>
+        <button class="nav-tab" onclick="setTab(this)">Download</button>
+        <button class="nav-tab" onclick="setTab(this)">Support</button>
+    </nav>
+
+    <div id="page-content">
+
+        <div class="tab-panel active" id="tab-dashboard">
+            <div class="dashboard-panel">
+                <div class="dashboard-kicker">
+                    <span class="dashboard-kicker-dot"></span>
+                    <span>Xetra</span>
+                </div>
+                <div class="dashboard-hero">
+                    <div class="dashboard-title">
+                        Xetra
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="dashboard-sub">
+                        A clean starting point for modules, free downloads, license details, and Discord support.
+                        Built to keep everything close, fast, and easy to reach.
+                    </div>
+                    <div class="dashboard-actions">
+                        <button class="dashboard-btn dashboard-btn-primary" onclick="setTabByName('Download')">
+                            <span>Download Free</span>
+                            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M10 3.5v8" />
+                                <path d="M6.8 8.8L10 12l3.2-3.2" />
+                                <path d="M4.5 15.5h11" />
+                            </svg>
+                        </button>
+                        <button class="dashboard-btn dashboard-btn-secondary" onclick="setTabByName('Pricing')">
+                            <span>View Pricing</span>
+                            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M7 13L13 7" />
+                                <path d="M8 7h5v5" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="dashboard-divider"></div>
+                <div class="dashboard-stats">
+                    <div class="dashboard-stat fast">
+                        <div class="dashboard-stat-icon">
+                            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M11 2L5 11h5l-1 7 6-9h-5z" />
+                            </svg>
+                        </div>
+                        <div class="dashboard-stat-copy">
+                            <div class="dashboard-stat-value">Fast</div>
+                            <div class="dashboard-stat-label">Access Flow</div>
+                        </div>
+                        <div class="dashboard-stat-note">Open the main areas quickly without digging through menus.</div>
+                    </div>
+                    <div class="dashboard-stat free">
+                        <div class="dashboard-stat-icon">
+                            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M10 3l5 2v4c0 3.4-2.1 6.4-5 7.8C7.1 15.4 5 12.4 5 9V5z" />
+                            </svg>
+                        </div>
+                        <div class="dashboard-stat-copy">
+                            <div class="dashboard-stat-value">Free</div>
+                            <div class="dashboard-stat-label">Starter Build</div>
+                        </div>
+                        <div class="dashboard-stat-note">Try the base experience with a lighter entry point.</div>
+                    </div>
+                    <div class="dashboard-stat discord">
+                        <div class="dashboard-stat-icon">
+                            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M7 9.5h.01M10 9.5h.01M13 9.5h.01" />
+                                <path d="M4 10c0-3.2 2.7-5.8 6-5.8s6 2.6 6 5.8-2.7 5.8-6 5.8c-.7 0-1.4-.1-2-.3L5 17l.8-2.4A5.5 5.5 0 0 1 4 10z" />
+                            </svg>
+                        </div>
+                        <div class="dashboard-stat-copy">
+                            <div class="dashboard-stat-value">Discord</div>
+                            <div class="dashboard-stat-label">Support Hub</div>
+                        </div>
+                        <div class="dashboard-stat-note">Jump into the community channel for updates and help.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-panel" id="tab-ui">
+
+            <div id="main-card">
+
+                <div class="title-bar">
+                    <span class="title-name">Xetra</span>
+                    <button class="close-btn" aria-label="Close" onclick="window.close()">✕</button>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="left-panel">
+                        <div class="logo-wrap">
+                            <span class="logo-text">Xetra</span>
+                        </div>
+                        <input class="key-input" type="text" placeholder="Key..." />
+                        <button class="login-btn">Login</button>
+                        <span class="hint-text">Enter a valid key to start your journey.</span>
+                    </div>
+
+                    <div class="right-panel">
+                        <h2 class="changelog-title">Changelogs</h2>
+                        <div class="changelog-list">
+
+                            <div class="changelog-card">
+                                <div class="changelog-header">
+                                    <span class="version-tag">v0.0.2a</span>
+                                    <span class="version-date">2026-04-24</span>
+                                </div>
+                                <ul class="change-list">
+                                    <li class="change-item"><span class="dot"></span>Added 'Team' ESP.</li>
+                                    <li class="change-item"><span class="dot"></span>Added 'Team Check' for Aim Assist
+                                        &amp; ESP.</li>
+                                </ul>
+                            </div>
+
+                            <div class="changelog-card">
+                                <div class="changelog-header">
+                                    <span class="version-tag">v0.0.2b</span>
+                                    <span class="version-date">2026-05-01</span>
+                                </div>
+                                <ul class="change-list">
+                                    <li class="change-item"><span class="dot"></span>Re-designed UI.</li>
+                                    <li class="change-item"><span class="dot"></span>Re-designed Login window.</li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-panel" id="tab-modules">
+            <div class="mod-card">
+
+                <div class="title-bar">
+                    <span class="title-name">Xetra</span>
+                    <button class="close-btn" aria-label="Close">✕</button>
+                </div>
+
+                <div class="mod-body">
+
+                    <div class="mod-panel mod-panel-full active" id="mod-info">
+                        <div style="display:flex;flex-direction:column;gap:16px;width:100%">
+                            <div class="mod-section" style="gap:0;padding:16px 18px">
+                                <div class="mod-section-label" style="margin-bottom:10px">Roblox Info</div>
+                                <div class="mod-status-row">
+                                    <span class="mod-status-label">Client</span>
+                                    <span class="mod-status-val">Waiting</span>
+                                </div>
+                            </div>
+                            <div class="mod-section" style="gap:0;padding:16px 18px">
+                                <div class="mod-section-label" style="margin-bottom:8px">Session Time</div>
+                                <div class="mod-info-timer-wrap">
+                                    <div class="mod-info-timer" id="session-timer">00:00:00</div>
+                                    <span class="mod-info-timer-note">HH:MM:SS</span>
+                                </div>
+                            </div>
+                            <div class="mod-section" style="gap:0;padding:16px 18px">
+                                <div class="mod-section-label" style="margin-bottom:10px">Account</div>
+                                <span class="mod-key-text">Key: xetra</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mod-panel" id="mod-aimassist">
+                        <div class="mod-left">
+                            <div class="mod-section">
+                                <div class="mod-section-label">Module</div>
+                                <label class="mod-checkbox-row"><input type="checkbox" class="mod-cb" /><span>Aim Assist
+                                        Enabled</span></label>
+                            </div>
+                            <div class="mod-section">
+                                <div class="mod-section-label">Keybind</div>
+                                <div class="mod-row"><span class="mod-row-label">Mode</span>
+                                    <div class="mod-select-wrap"><select class="mod-select">
+                                            <option>Hold</option>
+                                            <option>Toggle</option>
+                                        </select><span class="mod-select-arrow">▪</span></div>
+                                </div>
+                                <div class="mod-row"><span class="mod-row-label">Key</span>
+                                    <div class="mod-select-wrap"><select class="mod-select">
+                                            <option>Right Mouse</option>
+                                            <option>Left Mouse</option>
+                                            <option>Middle Mouse</option>
+                                            <option>X1 Mouse</option>
+                                        </select><span class="mod-select-arrow">▪</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mod-right">
+                            <div class="mod-section">
+                                <div class="mod-section-label">Targeting</div>
+                                <div class="mod-slider-row"><span class="mod-slider-label">Smoothing</span><span
+                                        class="mod-slider-val" id="smoothing-val">6x</span></div>
+                                <input type="range" class="mod-slider" min="1" max="20" value="6"
+                                    oninput="document.getElementById('smoothing-val').textContent=this.value+'x'" />
+                                <div class="mod-row mod-row-gap"><span class="mod-row-label">Hit Part</span>
+                                    <div class="mod-select-wrap"><select class="mod-select">
+                                            <option>Head</option>
+                                            <option>Body</option>
+                                            <option>Legs</option>
+                                        </select><span class="mod-select-arrow">▪</span></div>
+                                </div>
+                                <div class="mod-slider-row"><span class="mod-slider-label">Max Distance</span><span
+                                        class="mod-slider-val" id="maxdist-aa-val">1200m</span></div>
+                                <input type="range" class="mod-slider" min="100" max="3000" value="1200"
+                                    oninput="document.getElementById('maxdist-aa-val').textContent=this.value+'m'" />
+                                <div class="mod-slider-row"><span class="mod-slider-label">Field of View</span><span
+                                        class="mod-slider-val" id="fov-val">220px</span></div>
+                                <input type="range" class="mod-slider" min="10" max="500" value="220"
+                                    oninput="document.getElementById('fov-val').textContent=this.value+'px'" />
+                                <label class="mod-checkbox-row mod-mt"><input type="checkbox" class="mod-cb"
+                                        checked /><span>Show Field of View</span></label>
+                                <label class="mod-checkbox-row"><input type="checkbox" class="mod-cb" /><span>Team
+                                        Check</span></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mod-panel" id="mod-esp">
+                        <div class="mod-left">
+                            <div class="mod-section">
+                                <div class="mod-section-label">Module</div>
+                                <label class="mod-checkbox-row"><input type="checkbox" class="mod-cb" /><span>ESP
+                                        Enabled</span></label>
+                            </div>
+                            <div class="mod-section">
+                                <div class="mod-section-label">Visibility</div>
+                                <label class="mod-checkbox-row"><input type="checkbox" class="mod-cb"
+                                        checked /><span>Bounding Box</span></label>
+                                <label class="mod-checkbox-row"><input type="checkbox" class="mod-cb"
+                                        checked /><span>Name Tag</span></label>
+                                <label class="mod-checkbox-row"><input type="checkbox" class="mod-cb"
+                                        checked /><span>Distance</span></label>
+                                <label class="mod-checkbox-row"><input type="checkbox"
+                                        class="mod-cb" /><span>Team</span></label>
+                                <label class="mod-checkbox-row"><input type="checkbox"
+                                        class="mod-cb" /><span>Snapline</span></label>
+                            </div>
+                        </div>
+                        <div class="mod-right">
+                            <div class="mod-section">
+                                <div class="mod-section-label">Configuration</div>
+                                <div class="mod-slider-row"><span class="mod-slider-label">Max Distance</span><span
+                                        class="mod-slider-val" id="maxdist-esp-val">1200m</span></div>
+                                <input type="range" class="mod-slider" min="100" max="3000" value="1200"
+                                    oninput="document.getElementById('maxdist-esp-val').textContent=this.value+'m'" />
+                                <div class="mod-row mod-row-gap"><span class="mod-row-label">Refresh Rate</span>
+                                    <div class="mod-select-wrap"><select class="mod-select">
+                                            <option>60 fps</option>
+                                            <option>30 fps</option>
+                                            <option>120 fps</option>
+                                            <option>144 fps</option>
+                                        </select><span class="mod-select-arrow">▪</span></div>
+                                </div>
+                                <label class="mod-checkbox-row mod-mt"><input type="checkbox"
+                                        class="mod-cb" /><span>Team Check</span></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mod-panel" id="mod-misc">
+                        <div class="mod-left">
+                            <div class="mod-section">
+                                <div class="mod-section-label">Module</div>
+                                <label class="mod-checkbox-row"><input type="checkbox"
+                                        class="mod-cb" /><span>Modifications Enabled</span></label>
+                            </div>
+                            <div class="mod-section">
+                                <div class="mod-section-label">Noclip</div>
+                                <label class="mod-checkbox-row"><input type="checkbox"
+                                        class="mod-cb" /><span>Noclip</span></label>
+                            </div>
+                        </div>
+                        <div class="mod-right">
+                            <div class="mod-section">
+                                <div class="mod-section-label">Local Player</div>
+                                <div class="mod-slider-row"><span class="mod-slider-label">Walk Speed</span><span
+                                        class="mod-slider-val" id="walkspeed-val">16</span></div>
+                                <input type="range" class="mod-slider" min="1" max="100" value="16"
+                                    oninput="document.getElementById('walkspeed-val').textContent=this.value" />
+                                <label class="mod-checkbox-row mod-mb-sm"><input type="checkbox"
+                                        class="mod-cb" /><span>Pulse</span></label>
+                                <div class="mod-btn-row"><button class="mod-btn">Apply</button><button
+                                        class="mod-btn mod-btn-ghost">Reset</button></div>
+                                <div class="mod-slider-row mod-mt"><span class="mod-slider-label">Jump Power</span><span
+                                        class="mod-slider-val" id="jumppow-val">50</span></div>
+                                <input type="range" class="mod-slider" min="1" max="200" value="50"
+                                    oninput="document.getElementById('jumppow-val').textContent=this.value" />
+                                <div class="mod-btn-row"><button class="mod-btn">Apply</button><button
+                                        class="mod-btn mod-btn-ghost">Reset</button></div>
+                                <div class="mod-slider-row mod-mt"><span class="mod-slider-label">Gravity</span><span
+                                        class="mod-slider-val" id="gravity-val">196</span></div>
+                                <input type="range" class="mod-slider" min="1" max="500" value="196"
+                                    oninput="document.getElementById('gravity-val').textContent=this.value" />
+                                <div class="mod-btn-row"><button class="mod-btn">Apply</button><button
+                                        class="mod-btn mod-btn-ghost">Reset</button></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mod-panel mod-panel-full" id="mod-settings">
+                        <div class="mod-section mod-section-full">
+                            <div class="mod-section-label">Client</div>
+                            <div class="mod-row mod-row-gap"><span class="mod-row-label">Render Mode</span>
+                                <div class="mod-select-wrap"><select class="mod-select mod-select-wide">
+                                        <option>External</option>
+                                        <option>Internal</option>
+                                    </select><span class="mod-select-arrow">▪</span></div>
+                            </div>
+                            <div class="mod-row mod-row-gap"><span class="mod-row-label">Menu Key</span>
+                                <div class="mod-select-wrap"><select class="mod-select mod-select-wide">
+                                        <option>Insert</option>
+                                        <option>Delete</option>
+                                        <option>Home</option>
+                                        <option>End</option>
+                                        <option>F1</option>
+                                        <option>F2</option>
+                                    </select><span class="mod-select-arrow">▪</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mod-panel mod-panel-full" id="mod-configs">
+                        <div class="mod-section-full" style="flex:1;display:flex;flex-direction:column;min-height:0">
+                            <div class="mod-section-label">Configurations</div>
+                            <textarea class="mod-textarea" style="flex:1;height:auto;min-height:0"
+                                placeholder=""></textarea>
+                            <div class="mod-config-btns">
+                                <button class="mod-btn mod-btn-ghost mod-btn-full">Save</button>
+                                <button class="mod-btn mod-btn-ghost mod-btn-full">Load</button>
+                                <button class="mod-btn mod-btn-ghost mod-btn-full">Refresh</button>
+                                <button class="mod-btn mod-btn-ghost mod-btn-full">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="mod-nav">
+                    <button class="mod-nav-btn active" onclick="setMod('mod-info',this)" title="Info">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round">
+                            <circle cx="10" cy="10" r="7.5" />
+                            <line x1="10" y1="9" x2="10" y2="14" />
+                            <circle cx="10" cy="6.5" r="0.8" fill="currentColor" stroke="none" />
+                        </svg>
+                        <span class="mod-nav-label">Info</span>
+                    </button>
+                    <button class="mod-nav-btn" onclick="setMod('mod-aimassist',this)" title="Aim Assist">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round">
+                            <circle cx="10" cy="10" r="7" />
+                            <circle cx="10" cy="10" r="2.5" />
+                            <line x1="10" y1="1" x2="10" y2="4.5" />
+                            <line x1="10" y1="15.5" x2="10" y2="19" />
+                            <line x1="1" y1="10" x2="4.5" y2="10" />
+                            <line x1="15.5" y1="10" x2="19" y2="10" />
+                        </svg>
+                        <span class="mod-nav-label">Aim Assist</span>
+                    </button>
+                    <button class="mod-nav-btn" onclick="setMod('mod-esp',this)" title="Visuals">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="10" cy="6" r="3" />
+                            <path d="M4 18c0-3.314 2.686-6 6-6s6 2.686 6 6" />
+                        </svg>
+                        <span class="mod-nav-label">Visuals</span>
+                    </button>
+                    <button class="mod-nav-btn" onclick="setMod('mod-misc',this)" title="Misc">
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <circle cx="4" cy="10" r="1.5" />
+                            <circle cx="10" cy="10" r="1.5" />
+                            <circle cx="16" cy="10" r="1.5" />
+                        </svg>
+                        <span class="mod-nav-label">Misc</span>
+                    </button>
+                    <button class="mod-nav-btn" onclick="setMod('mod-settings',this)" title="Settings">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round">
+                            <circle cx="10" cy="10" r="2.8" />
+                            <path
+                                d="M10 2v1.5M10 16.5V18M2 10h1.5M16.5 10H18M4.1 4.1l1.1 1.1M14.8 14.8l1.1 1.1M4.1 15.9l1.1-1.1M14.8 5.2l1.1-1.1" />
+                        </svg>
+                        <span class="mod-nav-label">Settings</span>
+                    </button>
+                    <button class="mod-nav-btn" onclick="setMod('mod-configs',this)" title="Configs">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round">
+                            <line x1="3" y1="6" x2="17" y2="6" />
+                            <line x1="3" y1="10" x2="17" y2="10" />
+                            <line x1="3" y1="14" x2="17" y2="14" />
+                            <circle cx="7" cy="6" r="1.5" fill="currentColor" stroke="none" />
+                            <circle cx="13" cy="10" r="1.5" fill="currentColor" stroke="none" />
+                            <circle cx="9" cy="14" r="1.5" fill="currentColor" stroke="none" />
+                        </svg>
+                        <span class="mod-nav-label">Configs</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="tab-panel" id="tab-pricing">
+            <div class="pricing-panel">
+                <div class="pricing-head">
+                    <div class="pricing-title">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h7A2.5 2.5 0 0 1 16 5.5v9A2.5 2.5 0 0 1 13.5 17h-7A2.5 2.5 0 0 1 4 14.5z" />
+                            <path d="M7 7h6M7 10h6M7 13h3" />
+                        </svg>
+                        <span>Pricing</span>
+                    </div>
+                    <span class="pricing-badge">License Access</span>
+                </div>
+                <div class="pricing-list">
+                    <div class="pricing-group">
+                        <div class="pricing-group-title">Paid</div>
+                        <div class="pricing-item">
+                            <div class="pricing-main">
+                                <div class="pricing-left">
+                                    <span class="pricing-mark" aria-hidden="true">
+                                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="10" cy="10" r="7" />
+                                            <path d="M10 6v4l2.5 1.5" />
+                                        </svg>
+                                    </span>
+                                    <div class="pricing-copy">
+                                        <span class="pricing-duration">1 Day</span>
+                                        <span class="pricing-note">Best choice to try our software.</span>
+                                    </div>
+                                </div>
+                                <div class="pricing-price-wrap">
+                                    <span class="pricing-price">2.99 USD</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pricing-item">
+                            <div class="pricing-main">
+                                <div class="pricing-left">
+                                    <span class="pricing-mark" aria-hidden="true">
+                                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="4" y="4.5" width="12" height="11.5" rx="2" />
+                                            <path d="M7 3v3M13 3v3M4 8h12" />
+                                        </svg>
+                                    </span>
+                                    <div class="pricing-copy">
+                                        <span class="pricing-duration">7 Day</span>
+                                        <span class="pricing-note">Great for regular weekly gameplay.</span>
+                                    </div>
+                                </div>
+                                <div class="pricing-price-wrap">
+                                    <span class="pricing-price">12.99 USD</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pricing-item featured">
+                            <div class="pricing-main">
+                                <div class="pricing-left">
+                                    <span class="pricing-mark" aria-hidden="true">
+                                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M10 3.5l1.8 3.6 4 .6-2.9 2.8.7 4-3.6-1.9-3.6 1.9.7-4-2.9-2.8 4-.6z" />
+                                        </svg>
+                                    </span>
+                                    <div class="pricing-copy">
+                                        <span class="pricing-duration">30 Day</span>
+                                        <span class="pricing-note">Best value for long-term use.</span>
+                                    </div>
+                                </div>
+                                <div class="pricing-price-wrap">
+                                    <span class="pricing-tag">Best Value</span>
+                                    <span class="pricing-price">29.99 USD</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pricing-group">
+                        <div class="pricing-group-title">Free</div>
+                        <div class="pricing-item free">
+                            <div class="pricing-main">
+                                <div class="pricing-left">
+                                    <span class="pricing-mark" aria-hidden="true">
+                                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M5 10.5l3 3L15.5 6" />
+                                        </svg>
+                                    </span>
+                                    <div class="pricing-copy">
+                                        <span class="pricing-duration">Starter</span>
+                                        <span class="pricing-note">Limited access for testing core features.</span>
+                                    </div>
+                                </div>
+                                <div class="pricing-price-wrap">
+                                    <span class="pricing-price">0.00 USD</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-panel" id="tab-download">
+            <div class="download-panel">
+                <div class="download-head">
+                    <div class="download-title">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M10 3v8" />
+                            <path d="M6.5 8.5L10 12l3.5-3.5" />
+                            <path d="M4 15.5h12" />
+                        </svg>
+                        <span>Download</span>
+                    </div>
+                    <span class="download-badge">Free Build</span>
+                </div>
+                <div class="download-card">
+                    <div class="download-main">
+                        <div class="download-left">
+                            <span class="download-mark" aria-hidden="true">
+                                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10 3.5v8" />
+                                    <path d="M6.8 8.8L10 12l3.2-3.2" />
+                                    <path d="M4.5 15.5h11" />
+                                </svg>
+                            </span>
+                            <div class="download-copy">
+                                <div class="download-card-title">Xetra Free</div>
+                                <div class="download-sub">Download the free version to try core features.</div>
+                                <div class="download-file">Xetra.exe</div>
+                            </div>
+                        </div>
+                        <a class="download-btn" href="https://github.com/xetraroblox/xetraroblox.github.io/releases/download/Xetra/Xetra.exe" download="Xetra">
+                            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M10 3.5v8" />
+                                <path d="M6.8 8.8L10 12l3.2-3.2" />
+                                <path d="M4.5 15.5h11" />
+                            </svg>
+                            <span>Download Free</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="download-footnote">
+                    Paid version purchases are handled through our Discord server. Join the
+                    <a href="https://discord.com/" target="_blank" rel="noopener noreferrer">Discord server</a>
+                    to buy a paid license.
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-panel" id="tab-support">
+            <div class="support-panel">
+                <div class="support-head">
+                    <div class="support-title">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M5 14.5c-1.2-.8-2-2.1-2-3.6C3 7.6 6.1 5 10 5s7 2.6 7 5.9-3.1 5.9-7 5.9c-.8 0-1.6-.1-2.3-.3L5 17z" />
+                            <path d="M7.5 10.5h.01M10 10.5h.01M12.5 10.5h.01" />
+                        </svg>
+                        <span>Support</span>
+                    </div>
+                    <span class="support-badge">Discord Only</span>
+                </div>
+                <div class="support-card">
+                    <div class="support-main">
+                        <div class="support-left">
+                            <span class="support-mark" aria-hidden="true">
+                                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M6.5 13.5c2.1 1.1 4.9 1.1 7 0" />
+                                    <path d="M7.5 8.5h.01M12.5 8.5h.01" />
+                                    <path d="M5.5 15.5c-1.2-.4-2-1.3-2.2-2.6-.4-2.4.2-5.1 1.4-7.1 1.5-.4 2.7-.2 3.7.5a9.4 9.4 0 0 1 3.2 0c1-.7 2.2-.9 3.7-.5 1.2 2 1.8 4.7 1.4 7.1-.2 1.3-1 2.2-2.2 2.6" />
+                                </svg>
+                            </span>
+                            <div class="support-copy">
+                                <div class="support-card-title">Discord Server</div>
+                                <div class="support-sub">Need help? Join our official Discord server.</div>
+                                <div class="support-link">Not available.</div>
+                            </div>
+                        </div>
+                        <a class="support-btn" href="https://discord.com/" target="_blank"
+                            rel="noopener noreferrer">
+                            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M7 13L13 7" />
+                                <path d="M8 7h5v5" />
+                            </svg>
+                            <span>Join Discord</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function updateSlider(input) {
+            const min = parseFloat(input.min) || 0;
+            const max = parseFloat(input.max) || 100;
+            const val = parseFloat(input.value);
+            const pct = ((val - min) / (max - min)) * 100;
+            input.style.background = `linear-gradient(to right,#3357b0 0%,#3357b0 ${pct}%,rgba(255,255,255,0.08) ${pct}%)`;
+        }
+
+        function initSliders() {
+            document.querySelectorAll('.mod-slider').forEach(s => {
+                updateSlider(s);
+                const orig = s.oninput;
+                s.oninput = function (e) { if (orig) orig.call(this, e); updateSlider(this); };
+            });
+        }
+
+        let modSelectGlobalsBound = false;
+        function initCustomSelects() {
+            const wraps = document.querySelectorAll('.mod-select-wrap');
+            if (!wraps.length) return;
+
+            wraps.forEach(wrap => {
+                if (wrap.dataset.customized === '1') return;
+
+                const select = wrap.querySelector('.mod-select');
+                if (!select) return;
+
+                const custom = document.createElement('div');
+                custom.className = 'mod-custom-select';
+                if (select.classList.contains('mod-select-wide')) {
+                    custom.classList.add('is-wide');
+                }
+
+                const trigger = document.createElement('button');
+                trigger.type = 'button';
+                trigger.className = 'mod-custom-trigger';
+
+                const value = document.createElement('span');
+                value.className = 'mod-custom-value';
+                const selected = select.options[select.selectedIndex] || select.options[0];
+                value.textContent = selected ? selected.textContent : '';
+
+                const chevron = document.createElement('span');
+                chevron.className = 'mod-custom-chevron';
+                chevron.setAttribute('aria-hidden', 'true');
+
+                trigger.appendChild(value);
+                trigger.appendChild(chevron);
+
+                const menu = document.createElement('div');
+                menu.className = 'mod-custom-menu';
+
+                Array.from(select.options).forEach((opt, index) => {
+                    const optionBtn = document.createElement('button');
+                    optionBtn.type = 'button';
+                    optionBtn.className = 'mod-custom-option';
+                    optionBtn.textContent = opt.textContent;
+
+                    if (index === select.selectedIndex) {
+                        optionBtn.classList.add('is-selected');
+                    }
+
+                    optionBtn.addEventListener('click', () => {
+                        if (select.selectedIndex !== index) {
+                            select.selectedIndex = index;
+                            value.textContent = opt.textContent;
+                            menu.querySelectorAll('.mod-custom-option').forEach((node, i) => {
+                                node.classList.toggle('is-selected', i === index);
+                            });
+                            select.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+                        custom.classList.remove('is-open');
+                        wrap.classList.remove('is-open');
+                    });
+
+                    menu.appendChild(optionBtn);
+                });
+
+                trigger.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const willOpen = !custom.classList.contains('is-open');
+                    document.querySelectorAll('.mod-custom-select.is-open').forEach(openItem => {
+                        if (openItem !== custom) {
+                            openItem.classList.remove('is-open');
+                            const openWrap = openItem.closest('.mod-select-wrap');
+                            if (openWrap) openWrap.classList.remove('is-open');
+                        }
+                    });
+                    custom.classList.toggle('is-open', willOpen);
+                    wrap.classList.toggle('is-open', willOpen);
+                });
+
+                trigger.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        custom.classList.remove('is-open');
+                        wrap.classList.remove('is-open');
+                    }
+                    if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        custom.classList.add('is-open');
+                        wrap.classList.add('is-open');
+                    }
+                });
+
+                select.addEventListener('change', () => {
+                    const current = select.options[select.selectedIndex];
+                    value.textContent = current ? current.textContent : '';
+                    menu.querySelectorAll('.mod-custom-option').forEach((node, i) => {
+                        node.classList.toggle('is-selected', i === select.selectedIndex);
+                    });
+                });
+
+                custom.appendChild(trigger);
+                custom.appendChild(menu);
+                wrap.appendChild(custom);
+                wrap.dataset.customized = '1';
+            });
+
+            if (!modSelectGlobalsBound) {
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.mod-custom-select')) {
+                        document.querySelectorAll('.mod-custom-select.is-open').forEach(node => {
+                            node.classList.remove('is-open');
+                            const parentWrap = node.closest('.mod-select-wrap');
+                            if (parentWrap) parentWrap.classList.remove('is-open');
+                        });
+                    }
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        document.querySelectorAll('.mod-custom-select.is-open').forEach(node => {
+                            node.classList.remove('is-open');
+                            const parentWrap = node.closest('.mod-select-wrap');
+                            if (parentWrap) parentWrap.classList.remove('is-open');
+                        });
+                    }
+                });
+
+                modSelectGlobalsBound = true;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initSliders();
+            initCustomSelects();
+        });
+
+        const tabMap = { 'Dashboard': 'tab-dashboard', 'UI': 'tab-ui', 'Modules': 'tab-modules', 'Pricing': 'tab-pricing', 'Download': 'tab-download', 'Support': 'tab-support' };
+
+        function setTabByName(name) {
+            const tab = Array.from(document.querySelectorAll('.nav-tab'))
+                .find(t => t.textContent.trim() === name);
+            if (tab) setTab(tab);
+        }
+
+        function setTab(el) {
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            const panel = document.getElementById(tabMap[el.textContent.trim()]);
+            if (panel) {
+                panel.classList.add('active');
+                panel.style.animation = 'none';
+                panel.offsetHeight; // reflow
+                panel.style.animation = '';
+            }
+        }
+
+        function setMod(id, el) {
+            document.querySelectorAll('.mod-panel').forEach(p => {
+                p.classList.remove('active');
+            });
+            document.querySelectorAll('.mod-nav-btn').forEach(b => b.classList.remove('active'));
+            const panel = document.getElementById(id);
+            if (panel) {
+                panel.classList.add('active');
+            }
+            if (el) el.classList.add('active');
+        }
+
+        let sessionSeconds = 0;
+        function formatTime(s) {
+            const h = String(Math.floor(s / 3600)).padStart(2, '0');
+            const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+            const sec = String(s % 60).padStart(2, '0');
+            return `${h}:${m}:${sec}`;
+        }
+        setInterval(() => {
+            sessionSeconds++;
+            const el = document.getElementById('session-timer');
+            if (el) el.textContent = formatTime(sessionSeconds);
+        }, 1000);
+
+        const mouseGlow = document.getElementById('mouse-glow');
+        window.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            mouseGlow.style.background =
+                `radial-gradient(ellipse at ${x}% ${y}%, rgba(13,55,110,0.55) 0%, rgba(6,20,45,0.3) 45%, transparent 70%)`;
+        });
+
+        const overlay = document.getElementById('loading-overlay');
+        const fill = document.getElementById('progress-fill');
+        const pct = document.getElementById('progress-pct');
+        const mainCard = document.getElementById('main-card');
+
+        let frame = 0;
+        const totalFrames = 120;
+        const timer = setInterval(() => {
+            frame++;
+            const progress = Math.min(100, Math.round((frame / totalFrames) * 100));
+            fill.style.width = progress + '%';
+            pct.textContent = progress + '%';
+
+            mainCard.style.opacity = 0.55 + (progress / 100) * 0.45;
+            mainCard.style.transform = `scale(${0.992 + (progress / 100) * 0.008})`;
+
+            if (progress >= 100) {
+                clearInterval(timer);
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                    mainCard.classList.add('loaded');
+                    initSliders();
+                    initCustomSelects();
+                    const navbar = document.getElementById('navbar');
+                    navbar.style.transition = 'opacity 0.4s ease, transform 0.5s cubic-bezier(0.22,1,0.36,1)';
+                    navbar.style.transform = 'translateX(-50%) translateY(-6px)';
+                    requestAnimationFrame(() => {
+                        navbar.style.opacity = '1';
+                        navbar.style.transform = 'translateX(-50%) translateY(0)';
+                        navbar.style.pointerEvents = 'auto';
+                    });
+                }, 250);
+            }
+        }, 18);
+    </script>
+</body>
+
+</html>
